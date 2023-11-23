@@ -63,7 +63,8 @@ enum class EFacingContext
 };
 
 
-USTRUCT(BlueprintType);
+
+USTRUCT(BlueprintType)
 struct FG_MATHCOURSE2_API FRelativeContext {
 
 	GENERATED_BODY()
@@ -75,9 +76,6 @@ public:
 	EPositionYContext YContext;
 	UPROPERTY(EditAnywhere);
 	EPositionZContext ZContext;
-
-	UPROPERTY(EditAnywhere);
-	int thing;
 
 	UPROPERTY(EditAnywhere);
 	EDistanceContext DistanceContext;

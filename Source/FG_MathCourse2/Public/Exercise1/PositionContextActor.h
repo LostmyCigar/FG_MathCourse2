@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ContextLibrary.h"
+#include "Exercise2/InterpolationHelpers.h"
 #include "PositionContextActor.generated.h"
+
+#define PRINT(msg) GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Cyan, msg);
 
 //a little bit of copy paste
 UCLASS(BlueprintType, hidecategories = (Input, Movement, Collision, Rendering, HLOD, WorldPartition, DataLayers, Replication, Networking, Actor, LevelInstance, Cooking))
@@ -22,35 +25,64 @@ public:
 	virtual bool ShouldTickIfViewportsOnly() const override;
 
 
+/// <summary>
+/// Movement
+/// </summary
+
+public:
+	UPROPERTY(EditAnywhere)
+	bool ShouldMoveX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "!ShouldMoveX", EditConditionHides))
+	TEnumAsByte<EInterpolationType> XIntperolation;
+
+	UPROPERTY(EditAnywhere)
+	bool ShouldMoveY;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "!ShouldMoveY", EditConditionHides))
+	TEnumAsByte<EInterpolationType> YIntperolation;
+
+	UPROPERTY(EditAnywhere)
+	bool ShouldMoveZ;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "!ShouldMoveZ", EditConditionHides))
+	TEnumAsByte<EInterpolationType> ZIntperolation;
+
+	UPROPERTY(EditAnywhere)
+	float Speed;
+
+public:
+	void MoveX(float deltaTime);
+	void MoveY(float deltaTime);
+	void MoveZ(float deltaTime);
+
+	float BounceValue(float value, float min, float max, float speed, float deltaTime, bool& directionBool);
+
+
+private:
+	float TValue;
+	bool DirectionBool;
+
+
+/// <summary>
+/// /Color
+/// </summary>
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ERelativeContext ContextToCentralActor;
+	FRelativeContext ContextToCentralActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FColor ColorBasedOnContext;
 
 public:
 
-	/// <summary>
-	/// This is where we wanna try to lerp stuff later but for now this will do
-	/// </summary>
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void SetColorBasedOnContext(ERelativeContext& context) {
-
-		
-
-		uint8 R = 0;
-		uint8 G = 0;
-		uint8 B = 0;
-		uint8 A = 0;
-
-
-
-
-
-
+	UFUNCTION(BlueprintCallable)
+	void SetColorBasedOnContext(FRelativeContext& context) {
 		FColor color;
-		color.R = R;
-		color.G = G;
-		color.B = B;
-		color.A = A;
+		color.R = GetXColorValue(context.XContext);
+		color.G = GetYColorValue(context.YContext);
+		color.B = GetZColorValue(context.ZContext);
+		color.A = GetDistanceColorValue(context.DistanceContext);
+
+		//This is just so we can check the details
+		ColorBasedOnContext = color;
 
 		ChangeColor(color);
 	}
@@ -59,7 +91,7 @@ public:
 	void ChangeColor(FColor color);
 
 	UFUNCTION(BlueprintCallable)
-	void SetContext(ERelativeContext context) {
+	void SetContext(FRelativeContext context) {
 		ContextToCentralActor = context;
 		SetColorBasedOnContext(context);
 	}
@@ -86,7 +118,7 @@ private:
 	uint8 GetDistanceColorValue(EDistanceContext context) {
 		if (context == EDistanceContext::Close)
 			return 255;
-		return 0;
+		return 170;
 	}
 
 

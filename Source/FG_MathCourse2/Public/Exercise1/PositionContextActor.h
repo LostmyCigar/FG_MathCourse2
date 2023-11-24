@@ -21,8 +21,9 @@ public:
 
 
 public:	
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-	virtual bool ShouldTickIfViewportsOnly() const override;
+	//virtual bool ShouldTickIfViewportsOnly() const override;
 
 
 /// <summary>
@@ -30,25 +31,37 @@ public:
 /// </summary
 
 public:
+
+	UPROPERTY(EditAnywhere)
+	bool bCanMove = true;
+
+	UPROPERTY(EditAnywhere)
+	FVector MinPositionOffset;
+	UPROPERTY(EditAnywhere)
+	FVector MaxPositionOffset;
+
 	UPROPERTY(EditAnywhere)
 	bool ShouldMoveX;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "!ShouldMoveX", EditConditionHides))
-	TEnumAsByte<EInterpolationType> XIntperolation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "ShouldMoveX", EditConditionHides))
+	TEnumAsByte<EEasingType> XEasing;
 
 	UPROPERTY(EditAnywhere)
 	bool ShouldMoveY;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "!ShouldMoveY", EditConditionHides))
-	TEnumAsByte<EInterpolationType> YIntperolation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "ShouldMoveY", EditConditionHides))
+	TEnumAsByte<EEasingType> YEasing;
 
 	UPROPERTY(EditAnywhere)
 	bool ShouldMoveZ;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "!ShouldMoveZ", EditConditionHides))
-	TEnumAsByte<EInterpolationType> ZIntperolation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "ShouldMoveZ", EditConditionHides))
+	TEnumAsByte<EEasingType> ZEasing;
 
 	UPROPERTY(EditAnywhere)
 	float Speed;
 
 public:
+
+	void HandleMovement(float deltaTime);
+
 	void MoveX(float deltaTime);
 	void MoveY(float deltaTime);
 	void MoveZ(float deltaTime);
@@ -57,6 +70,9 @@ public:
 
 
 private:
+	FVector StartPosition;
+	FVector MinPosition;
+	FVector MaxPosition;
 	float TValue;
 	bool DirectionBool;
 
@@ -71,15 +87,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FColor ColorBasedOnContext;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool CanChangeColor;
+
 public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetColorBasedOnContext(FRelativeContext& context) {
 		FColor color;
-		color.R = GetXColorValue(context.XContext);
-		color.G = GetYColorValue(context.YContext);
-		color.B = GetZColorValue(context.ZContext);
-		color.A = GetDistanceColorValue(context.DistanceContext);
+		color.R = GetXColorValue(context.XContext) + GetDistanceColorValue(context.DistanceContext);
+		color.G = GetYColorValue(context.YContext) + GetDistanceColorValue(context.DistanceContext);
+		color.B = GetZColorValue(context.ZContext) + GetDistanceColorValue(context.DistanceContext);
+		color.A = 255;
 
 		//This is just so we can check the details
 		ColorBasedOnContext = color;
@@ -99,26 +118,26 @@ public:
 private:
 	uint8 GetXColorValue(EPositionXContext context) {
 		if (context == EPositionXContext::Behind)
-			return 255;
+			return 170;
 		return 0;
 	}
 
 	uint8 GetYColorValue(EPositionYContext context) {
 		if (context == EPositionYContext::ToTheLeft)
-			return 255;
+			return 170;
 		return 0;
 	}
 
 	uint8 GetZColorValue(EPositionZContext context) {
 		if (context == EPositionZContext::Above)
-			return 255;
+			return 170;
 		return 0;
 	}
 
 	uint8 GetDistanceColorValue(EDistanceContext context) {
 		if (context == EDistanceContext::Close)
-			return 255;
-		return 170;
+			return 75;
+		return 0;
 	}
 
 

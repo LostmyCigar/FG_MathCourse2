@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Exercise1/PositionContextActor.h"
+#include "Exercise2/InterpolationHelpers.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -10,23 +11,21 @@ APositionContextActor::APositionContextActor()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void APositionContextActor::BeginPlay()
+{
+	Super::BeginPlay();
+
+	StartPosition = GetActorLocation();
+	MinPosition = StartPosition + MinPositionOffset;
+	MaxPosition = StartPosition + MaxPositionOffset;
+}
+
 void APositionContextActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 
-	//Interpolation / Movement
-	TValue = BounceValue(TValue, 0, 1, Speed, DeltaTime, DirectionBool);
-
-	if (ShouldMoveX)
-		MoveX(DeltaTime);
-	if (ShouldMoveY)
-		MoveY(DeltaTime);
-	if (ShouldMoveZ)
-		MoveZ(DeltaTime);
-
-
-
+	HandleMovement(DeltaTime);
 
 
 	//Debug drawings
@@ -54,25 +53,62 @@ void APositionContextActor::Tick(float DeltaTime)
 
 }
 
-bool APositionContextActor::ShouldTickIfViewportsOnly() const
+//bool APositionContextActor::ShouldTickIfViewportsOnly() const
+//{
+//	return true;
+//}
+
+
+
+
+
+void APositionContextActor::HandleMovement(float deltaTime)
 {
-	return true;
+	if (!bCanMove)
+		return;
+
+	TValue = BounceValue(TValue, 0, 1, Speed, deltaTime, DirectionBool);
+
+	if (ShouldMoveX)
+		MoveX(deltaTime);
+	if (ShouldMoveY)
+		MoveY(deltaTime);
+	if (ShouldMoveZ)
+		MoveZ(deltaTime);
+
 }
-
-
-
-
 
 void APositionContextActor::MoveX(float deltaTime)
 {
+	FVector newPosition = GetActorLocation();
+
+	float t = UInterpolationHelpers::GetEaseValue(XEasing, TValue);
+
+	newPosition.X = FMath::Lerp(MinPosition.X, MaxPosition.X, t);
+
+	SetActorLocation(newPosition);
 }
 
 void APositionContextActor::MoveY(float deltaTime)
 {
+	FVector newPosition = GetActorLocation();
+
+	float t = UInterpolationHelpers::GetEaseValue(XEasing, TValue);
+
+	newPosition.Y = FMath::Lerp(MinPosition.Y, MaxPosition.Y, t);
+
+	SetActorLocation(newPosition);
 }
 
 void APositionContextActor::MoveZ(float deltaTime)
 {
+	FVector newPosition = GetActorLocation();
+
+	float t = UInterpolationHelpers::GetEaseValue(XEasing, TValue);
+
+	newPosition.Z = FMath::Lerp(MinPosition.Z, MaxPosition.Z, t);
+
+	SetActorLocation(newPosition);
 }
 
 float APositionContextActor::BounceValue(float value, float min, float max, float speed, float deltaTime, bool& directionBool)

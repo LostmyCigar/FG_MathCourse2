@@ -16,4 +16,14 @@ class FG_MATHCOURSE2_API ACentralActor : public AActor
 public:	
 	UFUNCTION(BlueprintCallable)
 	void CheckContextOfActors(TArray<APositionContextActor*> contextActors);
+
+	UFUNCTION(BlueprintCallable)
+	void MoveContextActors(TArray<APositionContextActor*> contextActors, bool shouldMove) {
+
+		for (int i = 0; i < contextActors.Num(); i++)
+		{
+			if (contextActors[i])
+				contextActors[i]->bCanMove = shouldMove;
+		}
+	}
 };

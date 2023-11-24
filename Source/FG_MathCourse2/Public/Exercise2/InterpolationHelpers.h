@@ -12,7 +12,6 @@ enum class EInterpolationType
 {
 	Lerp,
 	SLerp,
-
 };
 
 UENUM(BlueprintType)

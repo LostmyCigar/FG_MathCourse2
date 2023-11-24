@@ -60,7 +60,7 @@ void UContextLibrary::GetDistanceContext(AActor* sourceActor, AActor* targetActo
 	const auto OtherLocation = targetActor->GetActorLocation();
 	const auto Direction = OtherLocation - TargetLocation;
 
-	if (Direction.Length() > 1000)
+	if (Direction.Length() > 500)
 		relativeContext.DistanceContext = EDistanceContext::Far;
 	else relativeContext.DistanceContext = EDistanceContext::Close;
 }

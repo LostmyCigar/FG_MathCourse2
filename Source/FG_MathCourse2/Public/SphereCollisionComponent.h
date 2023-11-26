@@ -14,17 +14,24 @@ UCLASS(BlueprintType, meta = (BlueprintSpawnableComponent))
 class FG_MATHCOURSE2_API USphereCollisionComponent : public UCollisionComponent
 {
 	GENERATED_BODY()
-	
 
 public:
-	UPROPERTY(EditAnywhere)
-	float SphereRadius;
+	bool CheckCollision(UCollisionComponent* OtherCollisionComponent, FVector& collisionPoint) override {
+		
+		//If things are destroyed with bad timing this might be needed
+		if (!OtherCollisionComponent)
+			return false;
 
-public:
-	bool CheckCollision(ECustomCollisionShape OtherObjectCollisionShape) {
-	
-		if (OtherObjectCollisionShape == ECustomCollisionShape::Sphere) {
-		} 
+
+		switch (OtherCollisionComponent->CollisionShape)
+		{
+
+		case Sphere:
+			return UIntersectionLibrary::SphereSphere(GetOwner()->GetActorLocation(), ShapeInfo.Radius,
+				OtherCollisionComponent->GetOwner()->GetActorLocation(), OtherCollisionComponent->ShapeInfo.Radius, collisionPoint);
+		default:
+			break;
+		}
 
 		return false;
 	};

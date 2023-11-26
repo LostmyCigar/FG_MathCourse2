@@ -4,6 +4,9 @@
 #include "CollisionComponent.h"
 #include "Collision/CollisionSubsystem.h"
 
+FCollisionShapeInfo::FCollisionShapeInfo()
+{
+}
 
 UCollisionComponent::UCollisionComponent()
 {
@@ -12,14 +15,20 @@ UCollisionComponent::UCollisionComponent()
 }
 
 
-// Called when the game starts
 void UCollisionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 	const auto Subsystem = GetWorld()->GetSubsystem<UCollisionSubsystem>();
 	Subsystem->RegisterComponent(this);
-	
+
+	GetOwner()->OnDestroyed.AddDynamic(this, &UCollisionComponent::Destroy);
+}
+
+void UCollisionComponent::Destroy(AActor* destroyedActor)
+{
+	const auto Subsystem = GetWorld()->GetSubsystem<UCollisionSubsystem>();
+	Subsystem->UnregisterComponent(this);
 }
 
 
@@ -28,4 +37,5 @@ void UCollisionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 }
+
 

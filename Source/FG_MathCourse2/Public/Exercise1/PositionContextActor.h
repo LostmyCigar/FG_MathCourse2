@@ -32,7 +32,7 @@ public:
 
 public:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bCanMove = true;
 
 	UPROPERTY(EditAnywhere)

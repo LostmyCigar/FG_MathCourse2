@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType, meta = (BlueprintSpawnableComponent))
 class FG_MATHCOURSE2_API USphereCollisionComponent : public UCollisionComponent
 {
 	GENERATED_BODY()

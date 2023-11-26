@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ComponentVisualizer.h"
 #include "CollisionComponent.generated.h"
+
+#define PRINT(msg) GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Cyan, msg);
 
 UENUM(BlueprintType)
 enum ECustomCollisionShape : uint8
@@ -30,7 +33,11 @@ public:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	virtual bool CheckCollision(ECustomCollisionShape OtherObjectCollisionShape) { return false; };
+	virtual bool CheckCollision(UCollisionComponent* OtherCollisionComponent, FVector& collisionPoint) { return false; };
+
+	virtual void OnCollision(FVector collisionPoint, AActor* hitActor, UActorComponent* hitComponent) {
+		OnCollisionEvent.Broadcast(collisionPoint, hitActor, hitComponent);
+	}
 
 public:
 	UPROPERTY()
@@ -38,6 +45,6 @@ public:
 
 
 public:
-	UPROPERTY(BlueprintAssignable, Category = "Collision")
-	FOnCollision OnCollision;
+	UPROPERTY(BlueprintAssignable, Category = "Collision", DisplayName = "OnComponentCollision")
+	FOnCollision OnCollisionEvent;
 };

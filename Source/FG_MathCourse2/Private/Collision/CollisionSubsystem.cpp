@@ -1,19 +1,21 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetStringLibrary.h"
 #include "Collision/CollisionSubsystem.h"
 
 
-void UCollisionSubsystem::RegisterComponent(UCollisionComponent* Components)
+void UCollisionSubsystem::RegisterComponent(UCollisionComponent* Component)
 {
-	if (!CollisionComponents.Contains(Components))
-		CollisionComponents.Add(Components);
+	if (!CollisionComponents.Contains(Component))
+		CollisionComponents.Add(Component);
+
 }
 
-void UCollisionSubsystem::UnregisterComponent(UCollisionComponent* Components)
+void UCollisionSubsystem::UnregisterComponent(UCollisionComponent* Component)
 {
-	if (CollisionComponents.Contains(Components))
-		CollisionComponents.Remove(Components);
+	if (CollisionComponents.Contains(Component))
+		CollisionComponents.Remove(Component);
 }
 
 
@@ -24,13 +26,15 @@ void UCollisionSubsystem::Tick(float DeltaTime)
 
 	for (int i = 0; i < CollisionComponents.Num(); i++)
 	{
-		for (int j = 0; j < CollisionComponents.Num(); j++)
+		for (int j = i + 1; j < CollisionComponents.Num(); j++) // Starting at i + 1 should skip already tested collisions 
 		{
-			if (CollisionComponents[i] == CollisionComponents[j])
-				continue;
 
+			FVector collisionPoint;
+			if (CollisionComponents[i]->CheckCollision(CollisionComponents[j], collisionPoint)) {
 
-
+				CollisionComponents[i]->OnCollision(collisionPoint, CollisionComponents[j]->GetOwner(), CollisionComponents[j]);
+				CollisionComponents[j]->OnCollision(collisionPoint, CollisionComponents[i]->GetOwner(), CollisionComponents[i]);
+			}
 		}
 	}
 

@@ -23,8 +23,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	void RegisterComponent(UCollisionComponent* Components);
-	void UnregisterComponent(UCollisionComponent* Components);
+	void RegisterComponent(UCollisionComponent* Component);
+	void UnregisterComponent(UCollisionComponent* Component);
 
 	virtual TStatId GetStatId() const override;
 };

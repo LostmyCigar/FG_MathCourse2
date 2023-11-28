@@ -2,6 +2,7 @@
 
 
 #include "MathNoiseCameraShakePattern.h"
+#include "NoiseLibrary.h"
 
 float FMathNoiseShaker::Update(float DeltaTime, float AmplitudeMultiplier, float FrequencyMultiplier, float& InOutCurrentOffset) const
 {
@@ -17,7 +18,6 @@ float FMathNoiseShaker::Update(float DeltaTime, float AmplitudeMultiplier, float
 UMathNoiseCameraShakePattern::UMathNoiseCameraShakePattern(const FObjectInitializer& ObjInit)
 	: Super(ObjInit)
 {
-	// Default to only location shaking.
 	RotationAmplitudeMultiplier = 0.f;
 	FOV.Amplitude = 0.f;
 }
@@ -28,9 +28,6 @@ void UMathNoiseCameraShakePattern::StartShakePatternImpl(const FCameraShakeStart
 
 	if (!Params.bIsRestarting)
 	{
-		// All offsets are random. This is because the core perlin noise implementation
-		// uses permutation tables, so if two shakers have the same initial offset and the same
-		// frequency, they will have the same exact values.
 		InitialLocationOffset = FVector3f((float)FMath::RandHelper(255), (float)FMath::RandHelper(255), (float)FMath::RandHelper(255));
 		InitialRotationOffset = FVector3f((float)FMath::RandHelper(255), (float)FMath::RandHelper(255), (float)FMath::RandHelper(255));
 		InitialFOVOffset = (float)FMath::RandHelper(255);

@@ -10,4 +10,5 @@
 float UNoiseLibrary::PerlinNoise1D(float inFloat)
 {
 		//ill just use unreals noise instead :(
+	return 1.0f;
 }
